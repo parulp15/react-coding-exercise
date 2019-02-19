@@ -2,19 +2,22 @@ import React from 'react'
 import injectSheet from 'react-jss'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { getEvents, isEventsReady } from '../selectors'
+import { getEvents, isEventsReady, getEventsError } from '../selectors'
 import Icon from './Icon'
 import titleIcon from '../icons/vivid-angle-top-left.svg'
 import theme from '../style/theme'
 import Event from './Event'
 
-const Events = ({ classes, ready, events }) => (
+const Events = ({ classes, ready, events, error }) => (
   <div className={classes.container}>
     <h3 className={classes.title}>
       <Icon className={classes.titleIcon} symbol={titleIcon} />
-      Results
+      Results <span className={events.length > 0 ? classes.show : classes.hide}>&nbsp;: {events.length}&nbsp; events found</span>
     </h3>
-    {!ready && <p>Loading...</p>}
+    {!ready && !error && <div className={classes.loaderContainer}>
+      <div className={classes.loader} />
+    </div>}
+    {error && <div className={classes.error}> An unexpected error occured. Please try after sometime</div>}
     {ready && (
       <div className={classes.tilesWrapper}>
         <div className={classes.tiles}>
@@ -27,7 +30,8 @@ const Events = ({ classes, ready, events }) => (
 
 const mapStateToProps = (state) => ({
   ready: isEventsReady(state),
-  events: getEvents(state)
+  events: getEvents(state),
+  error: getEventsError(state)
 })
 
 export default compose(
@@ -35,7 +39,8 @@ export default compose(
   injectSheet({
     title: {
       paddingLeft: 20,
-      position: 'relative'
+      position: 'relative',
+      display: 'flex'
     },
     titleIcon: {
       position: 'absolute',
@@ -73,6 +78,47 @@ export default compose(
       '@media (min-width: 1200px)': {
         width: `calc(${100 / 3}% - ${theme.gutter}px)`
       }
+    },
+    hide: {
+      display: 'none'
+    },
+    show: {
+      display: 'block'
+    },
+    loaderContainer: {
+      height: '100%',
+      width: '100%',
+      backgroundColor: '#696969',
+      position: 'fixed',
+      top: '0',
+      left: '0',
+      zIndex: '1000',
+      opacity: '0.8'
+    },
+    loader: {
+      border: '16px solid #f3f3f3',
+      borderRadius: '50%',
+      borderTop: '16px solid #3498db',
+      width: '120px',
+      height: '120px',
+      animation: 'spin 2s linear infinite',
+      top: '45%',
+      left: '45%',
+      position: 'absolute'
+    },
+    '@keyframes spin': {
+      '0%': {
+        transform: 'rotate(0deg)'
+      },
+      '100%': {
+        transform: 'rotate(360deg)'
+      }
+    },
+    error: {
+      padding: '20px',
+      textAlign: 'center',
+      color: 'red',
+      fontWeight: 'bold'
     }
   })
 )(Events)
