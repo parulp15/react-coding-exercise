@@ -1,1 +1,1 @@
-export const isFavouritedSelector = () => false // TODO implement
+export const getFavouritesSelector = state => state.favourites.favourites

@@ -12,6 +12,7 @@ const Event = ({ content, classes, className }) => {
     url={content.url}
     icon={getEventTypeIcon(content)}
     imageAspect={7 / 4}
+    isFavourited={content.isFavourited}
   >
     {content.eventDateText && <p className={classes.detailsItem}>{content.eventDateText}</p>}
     {content.precinctTitle && <p className={classes.detailsItem}>{content.precinctTitle}</p>}

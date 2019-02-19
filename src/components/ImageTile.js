@@ -8,7 +8,7 @@ import color from 'color'
 import ShareButtons from './ShareButtons'
 
 const ImageTile = ({
-  classes, className, id, image, title, shareTitle = title, url, icon, imageAspect = (7 / 4), children, extraChildren
+  classes, className, id, image, title, shareTitle = title, url, icon, imageAspect = (7 / 4), children, extraChildren, isFavourited
 }) =>
   <div className={classNames(classes.tile, className)}>
     <a className={classes.content} href={url}>
@@ -21,7 +21,7 @@ const ImageTile = ({
       </div>
     </a>
 
-    <ShareButtons className={classes.shareButtons} url={url} title={shareTitle} id={id} />
+    <ShareButtons className={classes.shareButtons} url={url} title={shareTitle} id={id} isFavourited={isFavourited} />
     {extraChildren}
   </div>
 

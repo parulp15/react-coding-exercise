@@ -2,36 +2,48 @@ import React from 'react'
 import injectSheet from 'react-jss'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { getEvents, isEventsReady, getEventsError } from '../selectors'
+import { getEvents, isEventsReady, getEventsError, getFavouritesSelector } from '../selectors'
 import Icon from './Icon'
 import titleIcon from '../icons/vivid-angle-top-left.svg'
 import theme from '../style/theme'
 import Event from './Event'
 
-const Events = ({ classes, ready, events, error }) => (
-  <div className={classes.container}>
-    <h3 className={classes.title}>
-      <Icon className={classes.titleIcon} symbol={titleIcon} />
-      Results <span className={events.length > 0 ? classes.show : classes.hide}>&nbsp;: {events.length}&nbsp; events found</span>
-    </h3>
-    {!ready && !error && <div className={classes.loaderContainer}>
-      <div className={classes.loader} />
-    </div>}
-    {error && <div className={classes.error}> An unexpected error occured. Please try after sometime</div>}
-    {ready && (
-      <div className={classes.tilesWrapper}>
-        <div className={classes.tiles}>
-          {events.map(event => <Event key={event.id} className={classes.tile} content={event} />)}
-        </div>
-      </div>
-    )}
+const Events = ({ classes, ready, events, error, favourites }) => {
+  const event = ready ? (<div className={classes.tilesWrapper}>
+    <div className={classes.tiles}>
+      {events.map(event => {
+        let isFavourite = false
+        favourites && favourites.length > 0 && favourites.forEach(eventId => {
+          if (eventId === event.id) {
+            isFavourite = true
+          }
+        })
+        event.isFavourited = isFavourite
+        return <Event key={event.id} className={classes.tile} content={event} />
+      })}
+    </div>
   </div>
-)
+  ) : null
+  return (
+    <div className={classes.container}>
+      <h3 className={classes.title}>
+        <Icon className={classes.titleIcon} symbol={titleIcon} />
+        Results <span className={events.length > 0 ? classes.show : classes.hide}>&nbsp;: {events.length}&nbsp; events found</span>
+      </h3>
+      {!ready && !error && <div className={classes.loaderContainer}>
+        <div className={classes.loader} />
+      </div>}
+      {error && <div className={classes.error}> An unexpected error occured. Please try after sometime</div>}
+      {event}
+    </div>
+  )
+}
 
 const mapStateToProps = (state) => ({
   ready: isEventsReady(state),
   events: getEvents(state),
-  error: getEventsError(state)
+  error: getEventsError(state),
+  favourites: getFavouritesSelector(state)
 })
 
 export default compose(
